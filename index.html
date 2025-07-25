@@ -1,142 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Online Medicine Shop</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://unpkg.com/alpinejs" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Medicine Shop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/alpinejs" defer></script>
 </head>
 <body class="bg-gray-100 text-gray-900">
-<div class="container mx-auto p-6" xdata="medicineStore()">
-<h1 class="text-3xl font-bold text-center mb-6">Online<p class="text-center text-gray-700 mb-4">Browse and add medicines to your cart <i>like never before.</i></p>
-<!-- Cart Button -->
-<div class="flex justify-center mb-4">
-<button class="bg-green-500 text-white px-5 py-2 rounded" @click="toggleCart()">
-<span x-text="showCart ? 'Go Back to Medicines' : 'View Your Cart'"></span>
-</button>
-</div>
-<!-- Medicine List -->
-<div x-show="!showCart">
-<div class="grid grid-cols-1 md:grid-cols-2 lg:gridcols-3 gap-4">
-<template x-for="medicine in medicines":key="medicine.id">
-<div class="bg-white p-4 rounded-lg shadowlg">
-<h3 class="font-bold text-lg" xtext="medicine.name"></h3>
-<p class="text-sm text-gray-600" xtext="medicine.description"></p>
-<p class="text-sm text-gray-500">Stock:<span x-text="medicine.stock"></span></p>
-<p class="text-sm font-bold">Price: Rs.<span x-text="medicine.price"></span></p>
-<button class="mt-3 px-4 py-2 rounded textwhite" :class="medicine.stock > 0 ? 'bg-blue-500' :'bg-gray-400 cursor-not-allowed'" :disabled="medicine.stock === 0" @click="addToCart(medicine)">
-<span x-text="medicine.stock > 0 ? 'Add to Cart' : 'Out of Stock'"></span>
-</button>
-</div>
-</template>
-</div>
-</div>
-<!-- Cart View -->
-<div x-show="showCart">
-<h2 class="text-xl font-bold text-center mb-4">Your Shopping Cart</h2>
-<div x-show="cart.length === 0" class="text-center text-gray-500">Your cart is empty.</div>
-<ul class="list-disc pl-5">
-<template x-for="(item, index) in cart":key="index">
-<li class="flex justify-between items-center bgwhite p-2 rounded shadow-md mb-2">
-<span x-text="item.name"></span> - Rs.<span x-text="item.price"></span>
-<button class="text-red-500 text-sm ml-2" @click="removeFromCart(index)">Remove</button>
-</li>
-</template>
-</ul>
-<p class="mt-4 font-bold text-lg text-center">Total:Rs.<span x-text="getTotal()"></span></p>
-</div>
-<!-- Chatbot Button -->
-<button @click="showChat = !showChat" class="fixed bottom-6 right-6 bg-blue-500 text-white px-4 py-2 rounded-full shadow-lg">
- Confused? Chat with a bot now!
-</button>
-<!-- Chatbot -->
-<div x-show="showChat" class="fixed bottom-16 right6 bg-white w-72 shadow-lg rounded-lg p-4">
-<h3 class="font-bold text-lg">Chatbot</h3>
-<div class="h-40 overflow-auto border rounded p-2" id="chatbox">
-<template x-for="(message, index) in chatHistory" :key="index">
-<p class="text-sm p-1 rounded" :class="message.sender === 'bot' ? 'bg-gray200 text-left' : 'bg-blue-500 text-white text-right'">
-<span x-text="message.text"></span>
-</p>
-</template>
-</div>
-<div class="mt-2 flex">
-<input type="text" x-model="userInput" class="border p-1 flex-grow rounded" placeholder="Type a message...">
-<button @click="sendMessage()" class="bg-blue500 text-white px-3 py-1 rounded ml-2">Send</button>
-</div>
-</div>
-</div>
-<script>
-function medicineStore() {
-return {
-showCart: false,
-showChat: false,
-userInput: '',
-chatHistory: [{ sender: 'bot', text: 'Hello! How can Iassist you today?' }],
-medicines: [{ id: 1, name: "Paracetamol", price: 5,description: "Relieves mild to moderate pain and fever.",stock: 10 },
-{ id: 2, name: "Ibuprofen", price: 8, description:"Reduces inflammation and pain.", stock: 8 },
-{ id: 3, name: "Antibiotic", price: 12, description:"Treats bacterial infections effectively.", stock: 5 },
-{ id: 4, name: "Aspirin", price: 10, description:"Used for pain relief, fever, and heart health.", stock: 5 },
-{ id: 5, name: "Diclofenac", price: 12,description: "Anti-inflammatory for muscle pain andarthritis.", stock: 6 },
-{ id: 6, name: "Amoxicillin", price: 12,description: "Treats bacterial infections like throat and earinfections.", stock: 6 },
-{ id: 7, name: "Azithromycin", price: 15,description: "Used for respiratory and skin infections.", stock:4 },
-{ id: 8, name: "Ciprofloxacin", price: 18,description: "Strong antibiotic for urinary and gut infections.",stock: 5 },
-{ id: 9, name: "Cetirizine", price: 7, description:"Antihistamine for allergies and itching.", stock: 15 },
-{ id: 10, name: "Loratadine", price: 9, description:"Used for allergic reactions and hay fever.", stock: 10 },
-{ id: 11, name: "Phenylephrine", price: 6,description: "Decongestant for stuffy nose.", stock: 8 },
-{ id: 12, name: "Amlodipine", price: 9,description: "Helps lower high blood pressure.", stock: 12 },
-{ id: 13, name: "Atenolol", price: 11, description: "Used forhigh blood pressure and heart conditions.", stock: 7 },
-{ id: 14, name: "Losartan", price: 14, description: "Treatshypertension and protects kidneys.", stock: 5 },
-{ id: 15, name: "Metformin", price: 11, description:"Controls blood sugar levels in diabetes.", stock: 7 },
-{ id: 16, name: "Insulin", price: 25, description: "Regulatesblood sugar in diabetics.", stock: 5 },
-{ id: 17, name: "Omeprazole", price: 6, description:"Reduces acid reflux and heartburn.", stock: 9 },
-{ id: 18, name: "Ranitidine", price: 8, description: "Used foracidity and stomach ulcers.", stock: 6 },
-{ id: 19, name: "Loperamide", price: 4, description: "Usedfor controlling diarrhea.", stock: 10 },
-{ id: 20, name: "Diazepam", price: 13, description: "Treatsanxiety and muscle spasms.", stock: 4 },
-{ id: 21, name: "Sertraline", price: 14, description:"Antidepressant used for mood disorders.", stock: 5 },
-{ id: 22, name: "Melatonin", price: 10, description: "Helpswith sleep disorders.", stock: 6 }
-],
-cart: [],
-toggleCart() {
-this.showCart = !this.showCart;
-},
-addToCart(medicine) {
-if (medicine.stock > 0) {
-this.cart.push(medicine);
-medicine.stock--;
-}
-},
-removeFromCart(index) {
-let removedItem = this.cart.splice(index, 1)[0];
-removedItem.stock++;
-},
-getTotal() {
-return this.cart.reduce((sum, item) => sum + item.price, 0);
-},
-sendMessage() {
-if (this.userInput.trim() === '') return;
-this.chatHistory.push({ sender: 'user', text: this.userInput });
-let response = this.getBotResponse(this.userInput.toLowerCase());
-setTimeout(() => {
-this.chatHistory.push({ sender: 'bot', text: response });
-this.scrollChat();
-}, 500);
-this.userInput = '';
-},
-getBotResponse(message) {
-if (message.includes('medicines')) return "We have Paracetamol, Ibuprofen, and Antibiotics.";
-if (message.includes('price')) return "Prices range from $5 to $12. Check the listings for details.";
-if (message.includes('stock')) return "Stock varies for each medicine. Check the product listings.";
-return "I'm sorry, I don't understand. Try asking about medicines, prices, or stock.";
-},
-scrollChat() {
-setTimeout(() => {
-document.getElementById('chatbox').scrollTo
-p = document.getElementById('chatbox').scrollHeight;
-}, 10);
-}
-}
-}
-</script>
+    <div class="container mx-auto p-6" x-data="medicineStore()">
+        <h1 class="text-3xl font-bold text-center mb-6">Online Medicine Shop by Swapnil Bhadra 23BCT0001</h1>
+        <p class="text-center text-gray-700 mb-4">Browse and add medicines to your cart <i>like never before.</i></p>
+
+        <!-- for the cart button -->
+        <div class="flex justify-center mb-4">
+            <button class="bg-green-500 text-white px-5 py-2 rounded" @click="toggleCart()">
+                <span x-text="showCart ? 'Go Back to Medicines' : 'View Your Cart'"></span>
+            </button>
+        </div>
+
+        <!-- template for medicine list -->
+        <div x-show="!showCart">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <template x-for="medicine in medicines" :key="medicine.id">
+                    <div class="bg-white p-4 rounded-lg shadow-lg">
+                        <h3 class="font-bold text-lg" x-text="medicine.name"></h3>
+                        <p class="text-sm text-gray-600" x-text="medicine.description"></p>
+                        <p class="text-sm text-gray-500">Stock: <span x-text="medicine.stock"></span></p>
+                        <p class="text-sm font-bold">Price: Rs.<span x-text="medicine.price"></span></p>
+                        <button class="mt-3 px-4 py-2 rounded text-white"
+                            :class="medicine.stock > 0 ? 'bg-blue-500' : 'bg-gray-400 cursor-not-allowed'"
+                            :disabled="medicine.stock === 0"
+                            @click="addToCart(medicine)">
+                            <span x-text="medicine.stock > 0 ? 'Add to Cart' : 'Out of Stock'"></span>
+                        </button>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+
+        <!-- after clicking on cart -->
+        <div x-show="showCart">
+            <h2 class="text-xl font-bold text-center mb-4">Your Shopping Cart</h2>
+            <div x-show="cart.length === 0" class="text-center text-gray-500">Your cart is empty.</div>
+            <ul class="list-disc pl-5">
+                <template x-for="(item, index) in cart" :key="index">
+                    <li class="flex justify-between items-center bg-white p-2 rounded shadow-md mb-2">
+                        <span x-text="item.name"></span> - Rs.<span x-text="item.price"></span>
+                        <button class="text-red-500 text-sm ml-2" @click="removeFromCart(index)">Remove</button>
+                    </li>
+                </template>
+            </ul>
+            <p class="mt-4 font-bold text-lg text-center">Total: Rs.<span x-text="getTotal()"></span></p>
+        </div>
+
+        <!-- Chatbot  -->
+        <button @click="showChat = !showChat"
+            class="fixed bottom-6 right-6 bg-blue-500 text-white px-4 py-2 rounded-full shadow-lg">
+            💬 Confused? Chat with a bot now!
+        </button>
+
+        <!-- Chatbot function-->
+        <div x-show="showChat" class="fixed bottom-16 right-6 bg-white w-72 shadow-lg rounded-lg p-4">
+            <h3 class="font-bold text-lg">Chatbot</h3>
+            <div class="h-40 overflow-auto border rounded p-2" id="chatbox">
+                <template x-for="(message, index) in chatHistory" :key="index">
+                    <p class="text-sm p-1 rounded"
+                        :class="message.sender === 'bot' ? 'bg-gray-200 text-left' : 'bg-blue-500 text-white text-right'">
+                        <span x-text="message.text"></span>
+                    </p>
+                </template>
+            </div>
+            <div class="mt-2 flex">
+                <input type="text" x-model="userInput"
+                    class="border p-1 flex-grow rounded"
+                    placeholder="Type a message...">
+                <button @click="sendMessage()" class="bg-blue-500 text-white px-3 py-1 rounded ml-2">Send</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function medicineStore() {
+            return {
+                showCart: false,
+                showChat: false,
+                userInput: '',
+                chatHistory: [{ sender: 'bot', text: 'Hello! How can I assist you today?' }],
+                medicines: [
+                    { id: 1, name: "Paracetamol", price: 5, description: "Relieves mild to moderate pain and fever.", stock: 10 },
+                    { id: 2, name: "Ibuprofen", price: 8, description: "Reduces inflammation and pain.", stock: 8 },
+                    { id: 3, name: "Antibiotic", price: 12, description: "Treats bacterial infections effectively.", stock: 5 },
+                    { id: 4, name: "Aspirin", price: 10, description: "Used for pain relief, fever, and heart health.", stock: 5 },
+                    { id: 5, name: "Diclofenac", price: 12, description: "Anti-inflammatory for muscle pain and arthritis.", stock: 6 },
+                    { id: 6, name: "Amoxicillin", price: 12, description: "Treats bacterial infections like throat and ear infections.", stock: 6 },
+                    { id: 7, name: "Azithromycin", price: 15, description: "Used for respiratory and skin infections.", stock: 4 },
+                    { id: 8, name: "Ciprofloxacin", price: 18, description: "Strong antibiotic for urinary and gut infections.", stock: 5 },
+                    { id: 9, name: "Cetirizine", price: 7, description: "Antihistamine for allergies and itching.", stock: 15 },
+                    { id: 10, name: "Loratadine", price: 9, description: "Used for allergic reactions and hay fever.", stock: 10 },
+                    { id: 11, name: "Phenylephrine", price: 6, description: "Decongestant for stuffy nose.", stock: 8 },
+                    { id: 12, name: "Amlodipine", price: 9, description: "Helps lower high blood pressure.", stock: 12 },
+                    { id: 13, name: "Atenolol", price: 11, description: "Used for high blood pressure and heart conditions.", stock: 7 },
+                    { id: 14, name: "Losartan", price: 14, description: "Treats hypertension and protects kidneys.", stock: 5 },
+                    { id: 15, name: "Metformin", price: 11, description: "Controls blood sugar levels in diabetes.", stock: 7 },
+                    { id: 16, name: "Insulin", price: 25, description: "Regulates blood sugar in diabetics.", stock: 5 },
+                    { id: 17, name: "Omeprazole", price: 6, description: "Reduces acid reflux and heartburn.", stock: 9 },
+                    { id: 18, name: "Ranitidine", price: 8, description: "Used for acidity and stomach ulcers.", stock: 6 },
+                    { id: 19, name: "Loperamide", price: 4, description: "Used for controlling diarrhea.", stock: 10 },
+                    { id: 20, name: "Diazepam", price: 13, description: "Treats anxiety and muscle spasms.", stock: 4 },
+                    { id: 21, name: "Sertraline", price: 14, description: "Antidepressant used for mood disorders.", stock: 5 },
+                    { id: 22, name: "Melatonin", price: 10, description: "Helps with sleep disorders.", stock: 6 }
+                ],
+                cart: [],
+                toggleCart() {
+                    this.showCart = !this.showCart;
+                },
+                addToCart(medicine) {
+                    if (medicine.stock > 0) {
+                        this.cart.push(medicine);
+                        medicine.stock--;
+                    }
+                },
+                removeFromCart(index) {
+                    let removedItem = this.cart.splice(index, 1)[0];
+                    removedItem.stock++;
+                },
+                getTotal() {
+                    return this.cart.reduce((sum, item) => sum + item.price, 0);
+                },
+                sendMessage() {
+                    if (this.userInput.trim() === '') return;
+                    this.chatHistory.push({ sender: 'user', text: this.userInput });
+                    let response = this.getBotResponse(this.userInput.toLowerCase());
+                    setTimeout(() => {
+                        this.chatHistory.push({ sender: 'bot', text: response });
+                        this.scrollChat();
+                    }, 500);
+                    this.userInput = '';
+                },
+                getBotResponse(message) {
+                    if (message.includes('medicines')) return "We have Paracetamol, Ibuprofen, and Antibiotics.";
+                    if (message.includes('price')) return "Prices range from $5 to $12. Check the listings for details.";
+                    if (message.includes('stock')) return "Stock varies for each medicine. Check the product listings.";
+                    return "I'm sorry, I don't understand. Try asking about medicines, prices, or stock.";
+                },
+                scrollChat() {
+                    setTimeout(() => {
+                        document.getElementById('chatbox').scrollTop = document.getElementById('chatbox').scrollHeight;
+                    }, 10);
+                }
+            }
+        }
+    </script>
 </body>
 </html>
